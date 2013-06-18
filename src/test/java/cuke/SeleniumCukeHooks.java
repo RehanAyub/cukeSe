@@ -17,7 +17,7 @@ public class SeleniumCukeHooks {
     }
 
     @Before("@Selenium")
-    public void setupSeleniumbrowser() {
+    public void openSeleniumBrowserWindow() {
         String targetBrowser = System.getProperty("target_browser");
 
         if (targetBrowser == null || isBadAntValue(targetBrowser)) defaultTo("firefox");
@@ -27,8 +27,11 @@ public class SeleniumCukeHooks {
     }
 
     @After("@Selenium")
-    public void killSeleniumDriverWindow() {
-        closeBrowser();
+    public void closeBrowserWindow() {
+        if (driver != null) {
+            driver.close();
+            driver.quit();
+        }
     }
 
     private void setTimeoutTo(final int timeout, final TimeUnit timeUnit) {
@@ -45,13 +48,6 @@ public class SeleniumCukeHooks {
 
     private boolean isBadAntValue(String targetBrowser) {
         return targetBrowser.startsWith("${");
-    }
-
-    private void closeBrowser() {
-        if (driver != null) {
-            driver.close();
-            driver.quit();
-        }
     }
 
 }
