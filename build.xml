@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant"  name="library" default="buildall">
+	<property environment="env" />
+
+	<property name="output-dir" value="out"/>
+	<property name="reports-dir" value="reports"/>
+	<property name="reports.unit" value="${reports-dir}/unit"/>
+
+	<property name="srcdir" value="src/main/java" />
+	<property name="compile.out" value="${output-dir}/main/java" />
+
+	<property name="tests.srcdir" value="src/test/java" />
+	<property name="tests.compile.out" value="${output-dir}/test/java" />
+	<path id="tests.classpath">
+		<path path="${compile.out}"/>
+        <path location="lib/junit-4.11.jar"/>
+        <path location="lib/hamcrest-core-1.3.jar"/>
+
+        <path location="lib/cucumber-core-1.1.3.jar"/>
+        <path location="lib/cucumber-java-1.1.3.jar"/>
+        <path location="lib/cucumber-junit-1.1.3.jar"/>
+        <path location="lib/selenium-java-2.32.0.jar"/>
+        <path location="lib/selenium-server-standalone-2.32.0.jar"/>
+    </path>
+
+    <property name="repo" value="https://oss.sonatype.org/content/repositories/releases"/>
+    <property name="cucumber-jvm.version" value="1.1.3"/>
+    <property name="selenium.version" value="2.32.0"/>
+    <property name="jars" value="lib"/>
+
+    <target name="download">
+        <mkdir dir="${jars}"/>
+        <get skipexisting="true" src="${repo}/org/seleniumhq/selenium/selenium-java/${selenium.version}/selenium-java-${selenium.version}.jar"
+             dest="${jars}/selenium-java-${selenium.version}.jar"/>
+        <get skipexisting="true" src="https://selenium.googlecode.com/files/selenium-server-standalone-${selenium.version}.jar"
+             dest="${jars}/selenium-server-standalone-${selenium.version}.jar"/>
+
+        <get skipexisting="true" src="${repo}/info/cukes/cucumber-core/${cucumber-jvm.version}/cucumber-core-${cucumber-jvm.version}.jar"
+             dest="${jars}/cucumber-core-${cucumber-jvm.version}.jar"/>
+        <get skipexisting="true" src="${repo}/info/cukes/cucumber-java/${cucumber-jvm.version}/cucumber-java-${cucumber-jvm.version}.jar"
+             dest="${jars}/cucumber-java-${cucumber-jvm.version}.jar"/>
+        <get skipexisting="true" src="${repo}/info/cukes/cucumber-junit/${cucumber-jvm.version}/cucumber-junit-${cucumber-jvm.version}.jar"
+             dest="${jars}/cucumber-junit-${cucumber-jvm.version}.jar"/>
+        <!--
+        <get skipexisting="true" src="${repo}/com/rubiconproject/oss/jchronic/${jchronic.version}/jchronic-${jchronic.version}.jar"
+             dest="${jars}/jchronic-${jchronic.version}.jar"/>
+        -->
+    </target>
+
+
+    <target name="dependencies" depends="download">
+        <ivy:retrieve/>
+    </target>
+
+
+	<target name="compile" depends="dependencies">
+		<mkdir dir="${compile.out}" />
+		<javac srcdir="${srcdir}"
+			destdir="${compile.out}"
+			debug="on" />
+	</target>
+
+	<target name="compile-tests" depends="dependencies">
+		<mkdir dir="${tests.compile.out}" />
+		<javac srcdir="${tests.srcdir}"
+			destdir="${tests.compile.out}"
+			classpathref="tests.classpath"
+			debug="on" />
+	</target>
+
+	<target name="run-tests" depends="compile, compile-tests">
+		<mkdir dir="${reports.unit}"/>
+
+		<junit fork="yes" printsummary="yes" logfailedtests="true">
+            <sysproperty key="target_browser" value="${target_browser}"/>
+			<classpath>
+				<path path="${tests.compile.out}"/>
+				<path refid="tests.classpath"/>
+			</classpath>
+
+		  <formatter type="xml"/>
+
+		  <batchtest fork="yes" todir="${reports.unit}" failureproperty="unitTestsFailed" >
+		    <fileset dir="${tests.srcdir}">
+		      <include name="**/*Test.java"/>
+		    </fileset>
+		  </batchtest>
+		</junit>
+
+		<junitreport>
+		    <fileset dir="${reports.unit}">
+		        <include name="TEST-*.xml"/>
+		    </fileset>
+		    <report todir="${reports.unit}/html" format="frames"/>
+		</junitreport>
+
+		<fail if="unitTestsFailed" message="Unit Tests Failed"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${output-dir}"/>
+		<delete dir="${reports-dir}"/>
+	</target>
+
+	<target name="buildall" depends="clean, compile, compile-tests, run-tests"/>
+
+ </project>
