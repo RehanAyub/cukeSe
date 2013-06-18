@@ -11,7 +11,7 @@ import static selenium.WebDriverFactory.createDriverFor;
 public class SeleniumScript {
     private WebDriver driver;
 
-    void setWebDriver() {
+    public void setWebDriver() {
         String targetBrowser = System.getProperty("target_browser");
 
         if (targetBrowser == null || isBadAntValue(targetBrowser)) defaultTo("firefox");
@@ -43,7 +43,7 @@ public class SeleniumScript {
         assertEquals("Home", driver.getTitle());
     }
 
-    void closeBrowser() {
+    public void closeBrowser() {
         if (driver != null) {
             driver.close();
             driver.quit();
