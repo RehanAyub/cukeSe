@@ -2,3 +2,5 @@
 .idea/workspace.xml
 out/
 lib/
+reports/
+TESTS-TestSuites.xml
