@@ -3,10 +3,12 @@ package cuke;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import selenium.SeleniumScript;
 
-import static cuke.SeleniumCukeHooks.script;
 
 public class StepDefs {
+
+    private SeleniumScript script = new SeleniumScript();
 
     @Given("^I am on Google UK front page$")
     public void I_am_on_Google_UK_front_page() {
