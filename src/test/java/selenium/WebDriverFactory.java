@@ -7,10 +7,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import java.util.HashMap;
 import java.util.Map;
 
-interface DriverBuilder {
-    WebDriver getDriver();
-}
-
 public final class WebDriverFactory {
     private static Map<String, DriverBuilder> driverBuilders = new HashMap<String, DriverBuilder>();
 
@@ -31,6 +27,10 @@ public final class WebDriverFactory {
 
         return builder.getDriver();
     }
+}
+
+interface DriverBuilder {
+    WebDriver getDriver();
 }
 
 class FirefoxDriverBuilder implements DriverBuilder {
