@@ -10,7 +10,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static selenium.WebDriverFactory.createDriverFor;
 
 public class SeleniumCukeHooks {
-    public static WebDriver driver;
+    private static WebDriver driver;
+
+    public static WebDriver driver() {
+        return driver;
+    }
 
     @Before("@Selenium")
     public void setupSeleniumbrowser() {
