@@ -20,7 +20,7 @@ public class SeleniumCukeHooks {
     public void openSeleniumBrowserWindow() {
         String targetBrowser = System.getProperty("target_browser");
 
-        if (targetBrowser == null || isBadAntValue(targetBrowser)) defaultTo("firefox");
+        if (notDefined(targetBrowser)) defaultTo("firefox");
         else setDriverTo(targetBrowser);
 
         setTimeoutTo(30, SECONDS);
@@ -32,6 +32,10 @@ public class SeleniumCukeHooks {
             driver.close();
             driver.quit();
         }
+    }
+
+    private boolean notDefined(String targetBrowser) {
+        return targetBrowser == null || isBadAntValue(targetBrowser);
     }
 
     private void setTimeoutTo(final int timeout, final TimeUnit timeUnit) {
